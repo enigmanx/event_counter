@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  redis:
+    image: redis:latest
+    restart: always
+    volumes:
+      - "redis:/data"
+  webapp:
+    build: ./app
+    depends_on:
+      - redis
+    volumes:
+      - ./app:/app
+    ports:
+      - "5000:5000"
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:5000/health_check"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    command: bash -c "cd app/src && gunicorn --bind 0.0.0.0:5000 wsgi:app --workers=6"
+
+volumes:
+  redis: {}

@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  test:
+    build: ./app
+    volumes:
+      - ./app:/app
+    depends_on:
+      - redis
+    command: bash -c "cd app/tests && python3 -m pytest"
+  redis:
+    image: redis:latest
+    restart: always
